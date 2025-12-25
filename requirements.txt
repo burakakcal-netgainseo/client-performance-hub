@@ -1,0 +1,13 @@
+imap-tools
+pandas
+gspread
+google-auth
+schedule
+openpyxl
+beautifulsoup4
+requests
+xlrd
+fastapi
+uvicorn
+jinja2
+python-multipart

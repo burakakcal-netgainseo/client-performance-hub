@@ -1,5 +1,5 @@
 from imap_tools import MailBox, AND, OR
-import config
+import app_config as config
 from datetime import date, timedelta
 import smtplib
 from email.mime.text import MIMEText

@@ -251,10 +251,101 @@
             filter: grayscale(1);
             opacity: 0.2;
         }
+
+        /* Toast / Undo Notification */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        .toast {
+            background: #2D3748;
+            color: #fff;
+            padding: 16px 24px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            font-family: 'Outfit', sans-serif;
+            animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .toast-message {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+        }
+
+        .toast-action {
+            background: #fff;
+            color: #2D3748;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: transform 0.2s;
+        }
+
+        .toast-action:hover {
+            transform: scale(1.05);
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 
 <body>
+    <!-- Notification Area -->
+    <div id="notification-area" class="toast-container"></div>
+
+    <!-- Script to handle URL params for notifications -->
+    <script>
+        window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const action = urlParams.get('action');
+            const clientId = urlParams.get('client_id');
+
+            if (action === 'retired' && clientId) {
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.innerHTML = `
+                    <div class="toast-message">
+                        <span>🗑️ Client agent has been retired.</span>
+                    </div>
+                    <a href="/restore_client/${clientId}" class="toast-action">Undo</a>
+                `;
+                document.getElementById('notification-area').appendChild(toast);
+
+                // Auto dismiss after 10s
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 500);
+                }, 10000);
+
+                // Clean URL
+                window.history.replaceState({}, document.title, "/");
+            }
+        }
+    </script>
+
     <div class="container">
         <header>
             <img src="/static/pal_logo.png" alt="PAL Logo" class="header-logo">
@@ -313,6 +404,7 @@
                     <ul class="client-list">
                         {% if clients %}
                         {% for client in clients %}
+                        {% if client.get('status', 'active') == 'active' %}
                         <li class="client-item" style="border-top-left-radius: 80px;">
                             <div class="client-info">
                                 <h3>{{ client.client_name }} {% if client.sheet_name %}<small
@@ -339,10 +431,12 @@
                                     Sheet</a>
                                 <a href="/edit_client/{{ client.client_id }}" class="btn-delete"
                                     style="border-color: var(--primary); color: var(--primary); text-align: center;">Edit</a>
-                                <a href="/delete_client/{{ client.client_id }}" class="btn-delete"
-                                    style="text-align: center;">Retire</a>
+                                <a href="/retire_client/{{ client.client_id }}" class="btn-delete"
+                                    style="text-align: center;"
+                                    onclick="return confirm('Are you sure you want to retire this agent? This will pause reports.')">Retire</a>
                             </div>
                         </li>
+                        {% endif %}
                         {% endfor %}
                         {% else %}
                         <div style="padding: 60px; text-align: center; color: var(--text-sub);">

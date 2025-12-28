@@ -1,6 +1,6 @@
 import gspread
 from google.oauth2.service_account import Credentials
-import config
+import app_config as config
 import time
 import traceback
 

@@ -2,20 +2,27 @@ import traceback
 import time
 import json
 import os
-import config
+import app_config as config
 from datetime import datetime
 from email_service import EmailService
 from sheet_service import SheetService
+from client_config_service import ClientConfigService
 from parsers.form_parser import FormParser
 from parsers.call_parser import CallParser
 from parsers.link_parser import LinkReportParser
 
+# Configuration
+MASTER_SHEET_URL = os.getenv("MASTER_SHEET_URL", "https://docs.google.com/spreadsheets/d/1zSbn-poFSY512rIPN45a3yhCG7P5sDaXdu_JLoequUI/edit?gid=0#gid=0")
+client_service = ClientConfigService(MASTER_SHEET_URL)
+
 def load_clients():
     try:
-        with open('clients.json', 'r') as f:
-            return json.load(f)
+        all_clients = client_service.get_all_clients()
+        # Only return ACTIVE clients for processing
+        return [c for c in all_clients if c.get('status', 'active') == 'active']
     except Exception as e:
-        print(f"Error loading clients.json: {e}")
+        print(f"Error loading clients from Cloud Config: {e}")
+        traceback.print_exc()
         return []
 
 def calculate_monthly_stats(existing_data):

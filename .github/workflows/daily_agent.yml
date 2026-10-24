@@ -1,0 +1,66 @@
+name: Daily Lead Agent
+
+on:
+  schedule:
+    # Runs every day at 12:30 UTC (8:30 AM Eastern Daylight Time / 7:30 AM Eastern Standard Time)
+    - cron: '30 12 * * *'
+  workflow_dispatch:
+    inputs:
+      days:
+        description: 'Number of days back to process leads'
+        required: false
+        default: '2'
+
+jobs:
+  run-lead-agent:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Validate Secrets & Setup Service Account
+        env:
+          SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_PASS: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: |
+          if [ -z "$SERVICE_ACCOUNT_JSON" ]; then
+            echo "::error::Secret SERVICE_ACCOUNT_JSON is missing! Please add it in Repository Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+          if [ -z "$GMAIL_USER" ]; then
+            echo "::error::Secret GMAIL_USER is missing! Please add it in Repository Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+          if [ -z "$GMAIL_PASS" ]; then
+            echo "::error::Secret GMAIL_APP_PASSWORD is missing! Please add it in Repository Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+          echo "$SERVICE_ACCOUNT_JSON" > service_account.json
+          echo "Service account credentials file created successfully."
+
+      - name: Run Daily Lead Agent
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_PASS: ${{ secrets.GMAIL_APP_PASSWORD }}
+          SERVICE_ACCOUNT_FILE: service_account.json
+          MASTER_SHEET_URL: ${{ secrets.MASTER_SHEET_URL }}
+        run: |
+          DAYS="${{ github.event.inputs.days }}"
+          if [ -z "$DAYS" ]; then
+            DAYS="2"
+          fi
+          echo "Running Lead Agent for the last $DAYS days..."
+          python main.py --days "$DAYS"

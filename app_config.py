@@ -3,7 +3,7 @@ import os
 # Default to Environment Variables (Mock values if not set to avoid crash on import)
 GMAIL_USER = os.getenv("GMAIL_USER", "")
 GMAIL_PASS = os.getenv("GMAIL_APP_PASSWORD") or os.getenv("GMAIL_PASS", "")
-SERVICE_ACCOUNT_FILE = os.getenv("SERVICE_ACCOUNT_FILE", "service_account.json")
+SERVICE_ACCOUNT_FILE = os.getenv("SERVICE_ACCOUNT_FILE") or "service_account.json"
 
 # Try to load local config.py (overrides env vars if present)
 try:

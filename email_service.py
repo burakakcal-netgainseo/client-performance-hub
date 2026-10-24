@@ -13,15 +13,25 @@ class EmailService:
         self.smtp_url = 'smtp.gmail.com'
         self.smtp_port = 587
 
-    def send_notification_email(self, subject, body, to_email, is_html=False, logos=None):
-        # ... (rest of the code remains the same as before)
+    def send_notification_email(self, subject, body, report_recipient_str, is_html=False, logos=None):
         try:
             from email.mime.image import MIMEImage
             import os
 
+            # Parse recipients
+            to_list = []
+            bcc_list = []
+            
+            raw_recipients = [r.strip() for r in report_recipient_str.split(',')]
+            for r in raw_recipients:
+                if r.lower().startswith('bcc:'):
+                    bcc_list.append(r[4:].strip())
+                else:
+                    to_list.append(r)
+
             msg = MIMEMultipart()
             msg['From'] = self.user
-            msg['To'] = to_email
+            msg['To'] = ", ".join(to_list)
             msg['Subject'] = subject
 
             subtype = 'html' if is_html else 'plain'
@@ -36,16 +46,15 @@ class EmailService:
                             img.add_header('Content-Disposition', 'inline', filename=os.path.basename(path))
                             msg.attach(img)
 
-            print(f"Sending {'HTML' if is_html else 'plain text'} notification email to {to_email}...")
+            all_recipients = list(set(to_list + bcc_list))
+            print(f"Sending {'HTML' if is_html else 'plain text'} notification email to To: {to_list} | BCC: {bcc_list}...")
+            
             server = smtplib.SMTP(self.smtp_url, self.smtp_port)
             server.starttls()
             server.login(self.user, self.password)
             
-            # Split recipients if comma-separated
-            recipients = [r.strip() for r in to_email.split(',')]
-            
             text = msg.as_string()
-            server.sendmail(self.user, recipients, text)
+            server.sendmail(self.user, all_recipients, text)
             server.quit()
             print("Notification email sent successfully.")
         except Exception as e:

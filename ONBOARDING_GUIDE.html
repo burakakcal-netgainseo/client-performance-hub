@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lead Agent | Onboarding Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #D74E2E;
+            --primary-light: #ff7e5f;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            --text-main: #2d3748;
+            --text-sub: #718096;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(90deg, #1a202c 0%, #2d3748 100%);
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: var(--primary);
+        }
+
+        .header img {
+            width: 120px;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            color: #a0aec0;
+            font-size: 16px;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .intro h2 {
+            font-size: 24px;
+            color: var(--text-main);
+            margin-bottom: 12px;
+        }
+
+        .intro p {
+            color: var(--text-sub);
+            line-height: 1.6;
+        }
+
+        .step {
+            display: flex;
+            margin-bottom: 32px;
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid #edf2f7;
+            transition: transform 0.3s ease;
+        }
+
+        .step:hover {
+            transform: translateX(10px);
+            border-color: var(--primary-light);
+        }
+
+        .step-number {
+            min-width: 48px;
+            height: 48px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 20px;
+            margin-right: 24px;
+        }
+
+        .step-content h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .step-content p {
+            color: var(--text-sub);
+            line-height: 1.5;
+            font-size: 15px;
+        }
+
+        .code-block {
+            background: #f7fafc;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            color: #4a5568;
+            margin-top: 12px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .cta-box {
+            margin-top: 40px;
+            padding: 30px;
+            background: #fff5f5;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px dashed var(--primary);
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 14px 32px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            margin-top: 16px;
+            transition: filter 0.3s ease;
+        }
+
+        .btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .footer {
+            padding: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-sub);
+            border-top: 1px solid #edf2f7;
+        }
+
+        .badge {
+            background: #e2e8f0;
+            color: #4a5568;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <img src="pal_logo.png" alt="PAL Logo">
+            <h1>Lead Agent Onboarding</h1>
+            <p>New Client Configuration Guide</p>
+        </div>
+
+        <div class="content">
+            <div class="intro">
+                <h2>Ready to track a new client?</h2>
+                <p>Follow these 4 steps to add a client to the automated tracking system.</p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Open the Master Config Sheet</h3>
+                    <p>All system settings are managed through your central Google Sheet. Open it to begin.</p>
+                    <div class="code-block">
+                        https://docs.google.com/spreadsheets/d/1zSbn-poFSY512rIPN45a3yhCG7P5sDaXdu_JLoequUI/
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Add the Client Details</h3>
+                    <p>Add a new row at the bottom with the following information:</p>
+
+                    <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr; gap: 15px;">
+                        <div style="padding: 15px; background: #fff; border: 1px solid #edf2f7; border-radius: 12px;">
+                            <span class="highlight">client_name</span> <span class="badge"
+                                style="background:#e6fffa; color:#2c7a7b;">Required</span>
+                            <p style="font-size: 13px; margin-top: 5px;">The human-readable name (e.g., Acme Plumbing).
+                                Used in email reports and to verify lead sources.</p>
+                        </div>
+                        <div style="padding: 15px; background: #fff; border: 1px solid #edf2f7; border-radius: 12px;">
+                            <span class="highlight">status</span> <span class="badge"
+                                style="background:#e6fffa; color:#2c7a7b;">Required</span>
+                            <p style="font-size: 13px; margin-top: 5px;">Set to <strong>active</strong> to process
+                                leads. Set to <strong>retired</strong> to pause the agent for this client.</p>
+                        </div>
+                        <div style="padding: 15px; background: #fff; border: 1px solid #edf2f7; border-radius: 12px;">
+                            <span class="highlight">report_recipient</span> <span class="badge"
+                                style="background:#e6fffa; color:#2c7a7b;">Required</span>
+                            <p style="font-size: 13px; margin-top: 5px;">Who gets the report. Separate multiple emails
+                                with a comma. <br>
+                                <strong>Tip:</strong> Use <code>bcc:</code> prefix (e.g.,
+                                <code>admin@netgain.agency, bcc:internal@netgain.agency</code>) to hide recipients from
+                                the client.
+                            </p>
+                        </div>
+                        <div style="padding: 15px; background: #fff; border: 1px solid #edf2f7; border-radius: 12px;">
+                            <span class="highlight">sheet_url</span> <span class="badge"
+                                style="background:#e6fffa; color:#2c7a7b;">Required</span>
+                            <p style="font-size: 13px; margin-top: 5px;">The link to the client's destination Lead
+                                Sheet. The agent logs all data here.</p>
+                        </div>
+                        <div style="padding: 15px; background: #fff; border: 1px solid #edf2f7; border-radius: 12px;">
+                            <span class="highlight">search_keywords</span> <span class="badge"
+                                style="background:#e6fffa; color:#2c7a7b;">Required</span>
+                            <p style="font-size: 13px; margin-top: 5px;">Terms the agent uses to find leads in Gmail
+                                (e.g., "New Lead, Call Tracking").</p>
+                        </div>
+                        <div style="padding: 15px; background: #fff; border: 1px solid #edf2f7; border-radius: 12px;">
+                            <span class="highlight">client_id</span> <span class="badge">Optional</span>
+                            <p style="font-size: 13px; margin-top: 5px;">A unique technical slug (e.g. acme_plumbing).
+                                Helpful for organizing system logs.</p>
+                        </div>
+                        <div style="padding: 15px; background: #fff; border: 1px solid #edf2f7; border-radius: 12px;">
+                            <span class="highlight">parser_settings</span> <span class="badge">Optional</span>
+                            <p style="font-size: 13px; margin-top: 5px;">Used to ignore specific test emails. Example:
+                                <code>{"ignored_emails": ["test@test.com"]}</code>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Set Up the Client's Lead Sheet</h3>
+                    <p>Ensure the client's destination sheet has the correct headers in the first row. The agent will
+                        add them automatically if missing, but it's best to verify.</p>
+                    <div class="code-block">
+                        Date | Client Name | Email | Phone | Platform | Lead Type | Sold? | Revenue | Notes
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Grant Access to the Lead Agent</h3>
+                    <p>You <span class="highlight">must</span> share the client's lead sheet with the robot service
+                        account email for it to work:</p>
+                    <div class="code-block" style="background: #1a202c; color: #63b3ed;">
+                        burak-18@gen-lang-client-0007285386.iam.gserviceaccount.com
+                    </div>
+                    <p style="margin-top: 10px; font-size: 13px;"><em>(Click share in Google Sheets, paste the email,
+                            and choose <strong>Editor</strong>)</em></p>
+                </div>
+            </div>
+
+            <div class="cta-box">
+                <p>Once complete, the agent will automatically find this client next time it runs.</p>
+                <a href="https://docs.google.com/spreadsheets/d/1zSbn-poFSY512rIPN45a3yhCG7P5sDaXdu_JLoequUI/"
+                    class="btn" target="_blank">Open Master Config</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            &copy; 2026 Netgain Agency • Lead Agent System v2.0
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -44,5 +44,6 @@ Thumbs.db
 
 # Local data files
 clients.json
+temp_*.json
 task_info.txt
 debug_*.py

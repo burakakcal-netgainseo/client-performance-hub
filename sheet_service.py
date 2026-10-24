@@ -61,7 +61,24 @@ class SheetService:
     def get_existing_leads(self):
         if not self.sheet:
             self.connect()
-        return self.sheet.get_all_records()
+        try:
+            return self.sheet.get_all_records()
+        except gspread.exceptions.GSpreadException as e:
+            print("Warning: Falling back to get_all_values() due to duplicate/empty headers.")
+            values = self.sheet.get_all_values()
+            if not values:
+                return []
+            headers = values[0]
+            records = []
+            for row in values[1:]:
+                # Pad row to match headers length
+                row = row + [''] * (len(headers) - len(row))
+                record = {}
+                for i, h in enumerate(headers):
+                    if h and h not in record:
+                        record[h] = row[i]
+                records.append(record)
+            return records
 
     def lead_exists(self, new_lead, existing_leads):
         new_date = str(new_lead.get('Date', '')).strip()

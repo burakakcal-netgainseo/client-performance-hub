@@ -2,6 +2,11 @@ import traceback
 import time
 import json
 import os
+import socket
+
+# Prevent network calls from hanging indefinitely (e.g. during network dropouts)
+socket.setdefaulttimeout(30.0)
+
 import app_config as config
 from datetime import datetime
 from email_service import EmailService
@@ -12,7 +17,7 @@ from parsers.call_parser import CallParser
 from parsers.link_parser import LinkReportParser
 
 # Configuration
-MASTER_SHEET_URL = os.getenv("MASTER_SHEET_URL", "https://docs.google.com/spreadsheets/d/1zSbn-poFSY512rIPN45a3yhCG7P5sDaXdu_JLoequUI/edit?gid=0#gid=0")
+MASTER_SHEET_URL = os.getenv("MASTER_SHEET_URL") or "https://docs.google.com/spreadsheets/d/1zSbn-poFSY512rIPN45a3yhCG7P5sDaXdu_JLoequUI/edit?gid=0#gid=0"
 client_service = ClientConfigService(MASTER_SHEET_URL)
 
 def load_clients():

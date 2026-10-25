@@ -2,8 +2,8 @@ name: Daily Lead Agent
 
 on:
   schedule:
-    # Runs every day at 12:30 UTC (8:30 AM Eastern Daylight Time / 7:30 AM Eastern Standard Time)
-    - cron: '30 12 * * *'
+    # Runs every day at 13:00 UTC (9:00 AM Eastern Daylight Time / 8:00 AM Eastern Standard Time)
+    - cron: '0 13 * * *'
   workflow_dispatch:
     inputs:
       days:

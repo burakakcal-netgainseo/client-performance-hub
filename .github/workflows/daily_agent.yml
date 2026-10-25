@@ -2,8 +2,10 @@ name: Daily Lead Agent
 
 on:
   schedule:
-    # Runs every day at 13:00 UTC (9:00 AM Eastern Daylight Time / 8:00 AM Eastern Standard Time)
-    - cron: '0 13 * * *'
+    # Runs at 13:03 UTC (9:03 AM EDT) and 14:03 UTC (9:03 AM EST)
+    # Uses minute :03 to avoid GitHub Actions top-of-hour (:00/:30) queue drops,
+    # and checks America/New_York timezone so it runs once daily at 9 AM ET year-round.
+    - cron: '3 13,14 * * *'
   workflow_dispatch:
     inputs:
       days:
@@ -16,21 +18,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check Eastern Time Schedule (9 AM ET)
+        id: tz_check
+        run: |
+          ET_HOUR=$(TZ="America/New_York" date +%H)
+          echo "Current Eastern Time hour: $ET_HOUR (Event: ${{ github.event_name }})"
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$ET_HOUR" != "09" ]; then
+            echo "Skipping scheduled run outside the 9 AM ET window (current ET hour: $ET_HOUR)."
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Checkout repository
+        if: steps.tz_check.outputs.should_run == 'true'
         uses: actions/checkout@v4
 
       - name: Set up Python
+        if: steps.tz_check.outputs.should_run == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
 
       - name: Install dependencies
+        if: steps.tz_check.outputs.should_run == 'true'
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Validate Secrets & Setup Service Account
+        if: steps.tz_check.outputs.should_run == 'true'
         env:
           SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
@@ -52,6 +70,7 @@ jobs:
           echo "Service account credentials file created successfully."
 
       - name: Run Daily Lead Agent
+        if: steps.tz_check.outputs.should_run == 'true'
         env:
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
           GMAIL_PASS: ${{ secrets.GMAIL_APP_PASSWORD }}

@@ -25,15 +25,42 @@ jobs:
     steps:
       - name: Check Eastern Time Schedule (9 AM ET)
         id: tz_check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
         run: |
           ET_HOUR=$(TZ="America/New_York" date +%H)
-          echo "Current Eastern Time hour: $ET_HOUR (Event: ${{ github.event_name }})"
+          TODAY_UTC=$(date -u +%Y-%m-%d)
+          echo "Current Eastern Time hour: $ET_HOUR (Event: ${{ github.event_name }}, UTC Date: $TODAY_UTC)"
           if [ "${{ github.event_name }}" = "push" ]; then
             echo "Skipping lead agent on workflow file push event."
             echo "should_run=false" >> "$GITHUB_OUTPUT"
           elif [ "${{ github.event_name }}" = "schedule" ] && [ "$ET_HOUR" != "09" ]; then
             echo "Skipping scheduled run outside the 9 AM ET window (current ET hour: $ET_HOUR)."
             echo "should_run=false" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "schedule" ]; then
+            ALREADY_RAN=$(python3 -c "
+          import json, os, urllib.request
+          url = 'https://api.github.com/repos/${{ github.repository }}/actions/workflows/daily_agent.yml/runs?per_page=10'
+          req = urllib.request.Request(url, headers={'Authorization': f'Bearer {os.environ["GH_TOKEN"]}', 'Accept': 'application/vnd.github+json'})
+          runs = json.loads(urllib.request.urlopen(req).read().decode()).get('workflow_runs', [])
+          cur_id = str(os.environ['CURRENT_RUN_ID'])
+          today = '$TODAY_UTC'
+          found = any(
+              str(r.get('id')) != cur_id
+              and r.get('created_at', '').startswith(today)
+              and r.get('event') == 'workflow_dispatch'
+              and (r.get('status') != 'completed' or r.get('conclusion') == 'success')
+              for r in runs
+          )
+          print('true' if found else 'false')
+          ")
+            if [ "$ALREADY_RAN" = "true" ]; then
+              echo "Skipping scheduled run: a workflow_dispatch run already succeeded or is in progress today ($TODAY_UTC)."
+              echo "should_run=false" >> "$GITHUB_OUTPUT"
+            else
+              echo "should_run=true" >> "$GITHUB_OUTPUT"
+            fi
           else
             echo "should_run=true" >> "$GITHUB_OUTPUT"
           fi

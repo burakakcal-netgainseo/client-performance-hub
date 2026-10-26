@@ -2,10 +2,15 @@ name: Daily Lead Agent
 
 on:
   schedule:
-    # Runs at 13:03 UTC (9:03 AM EDT) and 14:03 UTC (9:03 AM EST)
-    # Uses minute :03 to avoid GitHub Actions top-of-hour (:00/:30) queue drops,
-    # and checks America/New_York timezone so it runs once daily at 9 AM ET year-round.
-    - cron: '3 13,14 * * *'
+    # Runs at 13:05 UTC (9:05 AM EDT) and 14:05 UTC (9:05 AM EST)
+    # Uses two separate standard cron lines and checks America/New_York timezone
+    # so it runs once daily at 9 AM ET year-round.
+    - cron: '5 13 * * *'
+    - cron: '5 14 * * *'
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/daily_agent.yml'
   workflow_dispatch:
     inputs:
       days:
@@ -23,7 +28,10 @@ jobs:
         run: |
           ET_HOUR=$(TZ="America/New_York" date +%H)
           echo "Current Eastern Time hour: $ET_HOUR (Event: ${{ github.event_name }})"
-          if [ "${{ github.event_name }}" = "schedule" ] && [ "$ET_HOUR" != "09" ]; then
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "Skipping lead agent on workflow file push event."
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "schedule" ] && [ "$ET_HOUR" != "09" ]; then
             echo "Skipping scheduled run outside the 9 AM ET window (current ET hour: $ET_HOUR)."
             echo "should_run=false" >> "$GITHUB_OUTPUT"
           else
